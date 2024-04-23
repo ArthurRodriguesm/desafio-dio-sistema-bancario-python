@@ -12,7 +12,7 @@ Criar uma simulação simples de um sistema bancário onde é possível realizar
 
 ## Etapas
 
-- > Criar Menu com opções: Saque, Depósito e Extrato
-- > Criar método de Depósito
-- > Criar método de Saque
-- > Criar método de exibir Extrato
+- [x] Criar Menu com opções: Saque, Depósito e Extrato
+- [x] Criar método de Depósito
+- [x] Criar método de Saque
+- [x] Criar método de exibir Extrato

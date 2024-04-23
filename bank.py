@@ -9,20 +9,52 @@ extrato = '''
 
 '''
 
-def depositar(saldo, extrato):
+def depositar():
     valor = float(input("Insira o valor do depósito: R$"))
 
-    if valor <= 0:
-        print("Erro")
+    if valor <= 0: 
+        print(f"ERRO: não é possível depositar valor igual a R${valor:.2f}")
         False
     else:
+        global saldo 
         saldo += valor
-        print(f"Depósito de R${valor:.2f} feito com sucesso!\n")
-    print(f"{extrato} Saldo: R${saldo:.2f}")
+        print(f"\n\nDepósito de R${valor:.2f} feito com sucesso!\n\n")
+        extrato()
 
 def sacar():
-    valor = float(input("Insira o valor do depósito: R$"))
-    
+    global saldo
+    global LIMITE_SAQUE_DIARIO
+    global quantidade_saque
+
+    valor = float(input("Insira o valor do saque: R$"))
+
+    if valor > saldo:
+        print(f"\n\nSaldo insuficiente!")
+    else:        
+        saldo -= valor
+        quantidade_saque += 1
+
+        if quantidade_saque == LIMITE_SAQUE_DIARIO:
+            print(f"\n\nLimite de {LIMITE_SAQUE_DIARIO} saques excedidos. Tente novamente em 24 horas.") 
+        elif valor > LIMITE_VALOR_SAQUE:
+            print(f"\n\nVocê não pode efetuar um saque maior de R${LIMITE_VALOR_SAQUE:.2f}")
+        else:
+            print(f"\n\nSaque de R${valor:.2f} feito com sucesso!\n\n")
+            extrato()
+
+def extrato():
+    global saldo
+    global quantidade_saque
+
+    extrato = f'''
+=================
+     EXTRATO
+=================
+
+Saldo disponível: R${saldo:.2f} 
+Quantidade de saques disponíveis: {LIMITE_SAQUE_DIARIO - quantidade_saque}
+'''
+    print(extrato)
 
 menu = '''
     ==============
@@ -40,12 +72,12 @@ while True:
     opcao = int(input(menu))
 
     if opcao == 1:
-        depositar(saldo, extrato)
+        depositar()
     elif opcao == 2:
         sacar()
     elif opcao == 3:
         extrato()
     elif opcao == 4:
-        print("Obrigado! E até mais :)")
+        print("\n\nObrigado! E até mais :)")
         False
         break
