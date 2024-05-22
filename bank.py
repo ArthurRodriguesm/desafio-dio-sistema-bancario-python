@@ -1,5 +1,22 @@
 import textwrap
 
+class Cliente():
+
+class PessoaFisica():
+
+class Conta():
+
+class ContaCorrente():
+
+class Historico():
+
+class Transacao():
+
+class Saque():
+
+class Deposito(): 
+
+
 def menu():
     menu = """\n
     ================ MENU ================
@@ -103,7 +120,6 @@ def listar_contas(contas):
         print("=" * 100)
         print(textwrap.dedent(linha))
 
-
 def main():
     LIMITE_SAQUES = 3
     AGENCIA = "0001"
@@ -156,4 +172,5 @@ def main():
 
         else:
             print("Operação inválida, por favor selecione novamente a operação desejada.")
+
 main()
