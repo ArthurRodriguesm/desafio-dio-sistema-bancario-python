@@ -2,14 +2,28 @@ import textwrap
 from abc import ABC, abstractclassmethod, abstractproperty
 from datetime import datetime
 
+class ContaIterador:
+    def __init__(self, contas):
+        self.contas = contas
+    
+    def __iter__(self):
+        pass
+
+    def __next__(self):
+        pass
+
 class Cliente:
     def __init__(self, endereco):
         self.endereco = endereco
         self.contas = []
+        self.indice_conta = 0
 
     def realizar_transacao(self, conta, transacao):
-        transacao.registrar(conta)
-
+        if len(conta.historico.transacoes_do_dia()) >= 2:
+            print(f"Você excedeu o limite de transações permitidas para hoje!")
+            return
+        transacao.registrar(conta)    
+    
     def adicionar_conta(self, conta):
         self.contas.append(conta)
 
@@ -131,15 +145,27 @@ class Historico:
                 "data": datetime.now().strftime("%d-%m-%Y %H:%M:%s"),
             }
         )
-
+    
+    def gerar_relatorio(self, tipo_transacao=None):
+        for transacao in self._transacoes:
+            if tipo_transacao is None or transacao["tipo"].lower() == tipo_transacao.lower():
+                yield transacao            
+    
+    def transacoes_do_dia(self):
+        data_atual = datetime.now().date()
+        transacoes = []
+        for transacao in self._transacoes:
+            data_transacao = datetime.strptime(transacao["data"], "%d-%m-%Y %H:%M:S").date()
+            if data_atual == data_transacao:
+                transacoes.append(transacao)
+            return transacoes
 
 class Transacao(ABC):
     @property
-    @abstractproperty
     def valor(self):
         pass
 
-    @abstractclassmethod
+    @classmethod
     def registrar(self, conta):
         pass
 
@@ -254,11 +280,19 @@ def exibir_extrato(clientes):
     transacoes = conta.historico.transacoes
 
     extrato = ""
+    tem_transacao = False
+    for transacao in conta.historico.gerar_relatorio():
+        tem_transacao = True
+        extrato += f"\n{transacao['data']}\n{transacao['tipo']}:\n\tR$ {transacao['valor']:.2f}"
+    
     if not transacoes:
         extrato = "Não foram realizadas movimentações."
     else:
         for transacao in transacoes:
             extrato += f"\n{transacao['tipo']}:\n\tR$ {transacao['valor']:.2f}"
+
+    if not tem_transacao:
+        extrato = "Não foi realizado nenhuma movimentação!"
 
     print(extrato)
     print(f"\nSaldo:\n\tR$ {conta.saldo:.2f}")
@@ -300,7 +334,7 @@ def criar_conta(numero_conta, clientes, contas):
 
 
 def listar_contas(contas):
-    for conta in contas:
+    for conta in ContaIterador(contas):
         print("=" * 100)
         print(textwrap.dedent(str(conta)))
 
