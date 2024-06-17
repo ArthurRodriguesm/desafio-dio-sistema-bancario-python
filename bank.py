@@ -142,11 +142,11 @@ class Historico:
             {
                 "tipo": transacao.__class__.__name__,
                 "valor": transacao.valor,
-                "data": datetime.now().strftime("%d-%m-%Y %H:%M:%s"),
+                "data": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
             }
         )
     
-    def gerar_relatorio(self, tipo_transacao=None):
+    def gerar_relatorio(self, tipo_transacao):
         for transacao in self._transacoes:
             if tipo_transacao is None or transacao["tipo"].lower() == tipo_transacao.lower():
                 yield transacao            
@@ -155,10 +155,10 @@ class Historico:
         data_atual = datetime.now().date()
         transacoes = []
         for transacao in self._transacoes:
-            data_transacao = datetime.strptime(transacao["data"], "%d-%m-%Y %H:%M:S").date()
+            data_transacao = datetime.strptime(transacao["data"], "%d-%m-%Y %H:%M:%S").date()
             if data_atual == data_transacao:
                 transacoes.append(transacao)
-            return transacoes
+        return transacoes
 
 class Transacao(ABC):
     @property
@@ -277,7 +277,9 @@ def exibir_extrato(clientes):
         return
 
     print("\n================ EXTRATO ================")
-    transacoes = conta.historico.transacoes
+    tipo_transacao = input("Informe o tipo de transação (opcional) ou deixe em branco para todas: ")
+    
+    transacoes = conta.historico.gerar_relatorio(tipo_transacao=tipo_transacao)
 
     extrato = ""
     tem_transacao = False
